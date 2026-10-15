@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4faff">
+  <meta name="description" content="A simple, friendly expense tracker designed for students.">
+  <title>Student Expense Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sky: { 50: "#f0f9ff", 100: "#e0f2fe", 200: "#bae6fd", 400: "#38bdf8", 500: "#0ea5e9", 600: "#0284c7" },
+            navy: "#142b45"
+          },
+          fontFamily: {
+            sans: ["DM Sans", "sans-serif"],
+            display: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen font-sans text-slate-700 antialiased">
+  <div class="page-glow page-glow-one" aria-hidden="true"></div>
+  <div class="page-glow page-glow-two" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#dashboard" aria-label="Student Expense Tracker home">
+        <span class="brand-icon"><i data-lucide="wallet-cards"></i></span>
+        <span class="brand-copy">
+          <strong>Student</strong>
+          <small>Expense Tracker</small>
+        </span>
+      </a>
+
+      <div class="sidebar-label">MENU</div>
+      <nav class="side-nav">
+        <a class="nav-link active" href="#dashboard" data-section="dashboard">
+          <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="#transactions" data-section="transactions">
+          <i data-lucide="arrow-left-right"></i><span>Transactions</span>
+        </a>
+        <a class="nav-link" href="#categories" data-section="categories">
+          <i data-lucide="shapes"></i><span>Categories</span>
+        </a>
+        <a class="nav-link" href="#budget" data-section="budget">
+          <i data-lucide="target"></i><span>Budget</span>
+        </a>
+        <a class="nav-link" href="#reports" data-section="reports">
+          <i data-lucide="chart-no-axes-column-increasing"></i><span>Reports</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-tip">
+          <span class="tip-icon"><i data-lucide="lightbulb"></i></span>
+          <p><strong>Small steps add up.</strong><br>Keep an eye on your spending this month.</p>
+          <a href="#budget" class="tip-link">View budget <i data-lucide="arrow-up-right"></i></a>
+        </div>
+        <div class="local-note"><i data-lucide="shield-check"></i><span>Your data stays on this device</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="dashboard">
+      <header class="topbar glass-panel">
+        <div class="topbar-left">
+          <button class="icon-button mobile-menu-button" id="menuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
+            <i data-lucide="menu"></i>
+          </button>
+          <div>
+            <p class="eyebrow" id="todayDate">TODAY</p>
+            <h1>Good morning, Student! <span class="wave">✦</span></h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="button-primary" id="addTransactionButton" type="button">
+            <i data-lucide="plus"></i><span>Add transaction</span>
+          </button>
+          <div class="avatar" aria-label="Student profile">S</div>
+        </div>
+      </header>
+
+      <section class="welcome-row" aria-label="Dashboard introduction">
+        <div>
+          <h2>Your money, <span>in focus.</span></h2>
+          <p>A clear picture of your spending, one day at a time.</p>
+        </div>
+        <label class="period-picker">
+          <i data-lucide="calendar-days"></i>
+          <span class="sr-only">Choose dashboard time period</span>
+          <select id="periodFilter" aria-label="Dashboard time period">
+            <option value="month">This month</option>
+            <option value="7days">Last 7 days</option>
+            <option value="all">All time</option>
+          </select>
+          <i data-lucide="chevron-down" class="select-chevron"></i>
+        </label>
+      </section>
+
+      <section class="summary-grid" aria-label="Financial summary">
+        <article class="summary-card balance-card">
+          <div class="summary-top">
+            <span class="summary-icon"><i data-lucide="wallet"></i></span>
+            <span class="summary-tag">Available</span>
+          </div>
+          <p class="summary-label">Total Balance</p>
+          <h3 id="totalBalance">Rp0</h3>
+          <p class="summary-foot"><i data-lucide="sparkles"></i> Your personal money snapshot</p>
+        </article>
+        <article class="summary-card">
+          <div class="summary-top">
+            <span class="summary-icon income-icon"><i data-lucide="trending-up"></i></span>
+            <span class="summary-tag positive-tag">In</span>
+          </div>
+          <p class="summary-label">Total Income</p>
+          <h3 id="totalIncome">Rp0</h3>
+          <p class="summary-foot" id="incomeFoot">For the selected period</p>
+        </article>
+        <article class="summary-card">
+          <div class="summary-top">
+            <span class="summary-icon expense-icon"><i data-lucide="trending-down"></i></span>
+            <span class="summary-tag expense-tag">Out</span>
+          </div>
+          <p class="summary-label">Total Expenses</p>
+          <h3 id="totalExpenses">Rp0</h3>
+          <p class="summary-foot" id="expenseFoot">For the selected period</p>
+        </article>
+        <article class="summary-card budget-summary-card">
+          <div class="summary-top">
+            <span class="summary-icon budget-icon"><i data-lucide="goal"></i></span>
+            <span class="summary-tag">This month</span>
+          </div>
+          <p class="summary-label">Monthly Budget</p>
+          <h3 id="monthlyBudget">Rp0</h3>
+          <p class="summary-foot"><span class="mini-progress"><span id="miniBudgetProgress"></span></span><span id="budgetSummaryFoot">Rp0 left</span></p>
+        </article>
+      </section>
+
+      <section class="content-grid" id="reports">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">YOUR ACTIVITY</p>
+              <h2>Spending overview</h2>
+              <p class="panel-subtitle">Your expenses over the last 7 days</p>
+            </div>
+            <span class="chart-legend"><span></span> Expenses</span>
+          </div>
+          <div class="chart-wrap"><canvas id="expenseChart" aria-label="Bar chart showing expenses over the last seven days" role="img"></canvas></div>
+        </article>
+
+        <article class="panel budget-panel" id="budget">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">STAY ON TRACK</p>
+              <h2>Budget overview</h2>
+            </div>
+            <span class="budget-heading-icon"><i data-lucide="target"></i></span>
+          </div>
+          <p class="budget-caption">Monthly spending limit</p>
+          <div class="budget-amount-row"><strong id="budgetSpent">Rp0</strong><span>of <span id="budgetLimit">Rp0</span></span></div>
+          <div class="progress-track budget-track"><span id="budgetProgress"></span></div>
+          <div class="budget-meta"><span id="budgetPercent">0% used</span><span id="budgetRemaining">Rp0 remaining</span></div>
+          <div class="budget-callout" id="budgetCallout">
+            <span class="callout-icon"><i data-lucide="sparkles"></i></span>
+            <p id="budgetMessage">You’re doing great. Keep it up!</p>
+          </div>
+          <button type="button" class="text-button" id="editBudgetButton">Edit monthly budget <i data-lucide="arrow-right"></i></button>
+        </article>
+      </section>
+
+      <section class="content-grid lower-grid">
+        <article class="panel transactions-panel" id="transactions">
+          <div class="panel-heading transactions-heading">
+            <div>
+              <p class="section-kicker">THE LATEST</p>
+              <h2>Recent transactions</h2>
+            </div>
+            <button type="button" class="button-secondary" id="addTransactionButtonSecondary"><i data-lucide="plus"></i> Add new</button>
+          </div>
+          <div class="filter-row">
+            <label class="search-box">
+              <i data-lucide="search"></i>
+              <span class="sr-only">Search transactions</span>
+              <input type="search" id="searchInput" placeholder="Search transactions..." autocomplete="off">
+            </label>
+            <label class="filter-select-wrap">
+              <span class="sr-only">Filter by category</span>
+              <select id="categoryFilter" aria-label="Filter by category">
+                <option value="all">All categories</option>
+              </select><i data-lucide="chevron-down"></i>
+            </label>
+            <label class="filter-select-wrap">
+              <span class="sr-only">Filter by transaction type</span>
+              <select id="typeFilter" aria-label="Filter by transaction type">
+                <option value="all">All types</option>
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select><i data-lucide="chevron-down"></i>
+            </label>
+          </div>
+          <div class="table-scroll">
+            <table class="transactions-table">
+              <thead><tr>
+                <th scope="col">Transaction</th><th scope="col">Category</th><th scope="col">Date</th><th scope="col">Type</th><th scope="col" class="amount-heading">Amount</th><th scope="col"><span class="sr-only">Actions</span></th>
+              </tr></thead>
+              <tbody id="transactionRows"></tbody>
+            </table>
+            <div class="empty-state hidden" id="emptyState">
+              <span><i data-lucide="search-x"></i></span>
+              <strong>No transactions found</strong>
+              <p>Try another search or add a new transaction.</p>
+            </div>
+          </div>
+          <div class="table-footer"><span id="transactionCount">Showing 0 transactions</span><span>Stored on this device <i data-lucide="lock-keyhole"></i></span></div>
+        </article>
+
+        <article class="panel categories-panel" id="categories">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">WHERE IT GOES</p>
+              <h2>Expense categories</h2>
+            </div>
+            <button type="button" class="icon-button subtle-button" id="categoryClearButton" aria-label="Clear category filter"><i data-lucide="list-filter"></i></button>
+          </div>
+          <div class="category-list" id="categoryList"></div>
+          <div class="category-footer"><span>Category spend</span><strong id="categoryTotal">Rp0</strong></div>
+        </article>
+      </section>
+
+      <footer class="page-footer">
+        <span>Made for student life <span class="footer-heart">♡</span></span>
+        <span>Your finances are private and saved locally</span>
+      </footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="transactionModal" role="presentation">
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-heading">
+        <div><p class="section-kicker">KEEP YOUR RECORDS FRESH</p><h2 id="modalTitle">Add transaction</h2></div>
+        <button type="button" class="icon-button modal-close" id="closeModalButton" aria-label="Close dialog"><i data-lucide="x"></i></button>
+      </div>
+      <p class="modal-description">Every little detail helps you understand your money better.</p>
+      <form id="transactionForm">
+        <div class="form-field">
+          <label>Transaction name</label>
+          <input id="transactionName" name="name" type="text" maxlength="60" placeholder="e.g. Lunch at campus" required>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="transactionAmount">Amount (Rp)</label>
+            <input id="transactionAmount" name="amount" type="number" min="1" step="1" inputmode="numeric" placeholder="25000" required>
+          </div>
+          <div class="form-field">
+            <label for="transactionType">Type</label>
+            <select id="transactionType" name="type" required>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="transactionCategory">Category</label>
+            <select id="transactionCategory" name="category" required></select>
+          </div>
+          <div class="form-field">
+            <label for="transactionDate">Date</label>
+            <input id="transactionDate" name="date" type="date" required>
+          </div>
+        </div>
+        <p class="form-error hidden" id="formError" role="alert"></p>
+        <div class="modal-actions">
+          <button type="button" class="button-secondary cancel-button" id="cancelModalButton">Cancel</button>
+          <button type="submit" class="button-primary submit-button"><i data-lucide="plus"></i> Save transaction</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop hidden" id="budgetModal" role="presentation">
+    <section class="modal-card budget-modal-card" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle">
+      <div class="modal-heading">
+        <div><p class="section-kicker">PLAN WITH CONFIDENCE</p><h2 id="budgetModalTitle">Monthly budget</h2></div>
+        <button type="button" class="icon-button budget-modal-close" aria-label="Close dialog"><i data-lucide="x"></i></button>
+      </div>
+      <p class="modal-description">Choose a spending limit that feels right for you.</p>
+      <form id="budgetForm">
+        <div class="form-field">
+          <label for="budgetInput">Monthly limit (Rp)</label>
+          <input id="budgetInput" type="number" min="1" step="1" inputmode="numeric" required>
+        </div>
+        <p class="form-error hidden" id="budgetError" role="alert"></p>
+        <div class="modal-actions">
+          <button type="button" class="button-secondary budget-cancel-button">Cancel</button>
+          <button type="submit" class="button-primary submit-button"><i data-lucide="check"></i> Save budget</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="script.js"></script>
+</body>
+</html>
